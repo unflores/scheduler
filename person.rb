@@ -23,13 +23,19 @@ class Person
     }
     
   end
+  
   def take(responsibility)
-    @availability.delete(responsibility)
+    @availability.delete(responsibility.to_sym)
     self
   end
+  
   def is_available_for?(responsibility)
-    return true if @availability[responsibility.to_s] == 1
+    return true if @availability[responsibility.to_sym] == 1
     return false
+  end
+  
+  def key
+    "#{first}#{last}".gsub(' ','_').to_sym
   end
 end
 

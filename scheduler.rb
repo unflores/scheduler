@@ -5,10 +5,11 @@ class Scheduler
   
   def initialize
     @schedule_to_fill = ['friday', 'saturday', 'sunday']
-    @people = []
+    @people = {}
     @people_pool
     CSV::Reader.parse(File.open("./example/schedule.csv", 'r')) do |row|
-      @people << Person.new(row)
+      person = Person.new(row)
+      @people[person.key] = person
     end
   end
 
@@ -21,26 +22,27 @@ class Scheduler
 =end
   def find_schedule(schedule = {}, people = @people, responsibilities = @schedule_to_fill)
     return schedule if responsibilities.nil? or responsibilities.empty?
-    person = people.shift
-    
-    people.each do |person|
+    people.each do |key, person|
       responsibilities.each do |responsibility|
-        puts "#{schedule.inspect}, #{people.inspect},#{responsibilities.dup.reject{|a| a == responsibility}}"
-        if person.is_available_for?(responsibility) and correct_schedule = find_schedule(schedule, people.dup.take(responsibility),responsibilities.dup.reject{|a| a == responsibility})
+         # puts "#{schedule}, #{get_people_minus_responsibility(people.dup,person,responsibility).inspect} ,#{responsibilities.dup.reject{|a| a == responsibility}}"
+        get_people_minus_responsibility(people.dup,person,responsibility)
+        if person.is_available_for?(responsibility) and correct_schedule = find_schedule(schedule, get_people_minus_responsibility(people.dup,person,responsibility) ,responsibilities.dup.reject{|a| a == responsibility})
+          schedule << {responsibility => person}
           return schedule << correct_schedule 
         end
+
       end
     end
     
-    
-    responsibilities.each do |responsibility|
-      if person.is_available_for?(responsibility) and correct_schedule = find_schedule(schedule, people,responsibilities.copy.reject{|a| a == responsibility})
-        return schedule << correct_schedule 
-      end
-    end
     return false
   end
-  
+
+  def get_people_minus_responsibility(people,person, responsibility) 
+    peeps = people.dup
+    peeps[person.key] = person.take(responsibility)
+  puts  peeps.inspect
+    peeps
+  end
 end
 
 s = Scheduler.new()
