@@ -1,6 +1,6 @@
 class Scheduler
   require 'csv'
-  require 'person'
+  require 'lib/person'
   attr_accessor :people
   
   def initialize
@@ -24,13 +24,12 @@ class Scheduler
     return schedule if responsibilities.nil? or responsibilities.empty?
     people.each do |key, person|
       responsibilities.each do |responsibility|
-         # puts "#{schedule}, #{get_people_minus_responsibility(people.dup,person,responsibility).inspect} ,#{responsibilities.dup.reject{|a| a == responsibility}}"
-        get_people_minus_responsibility(people.dup,person,responsibility)
-        if person.is_available_for?(responsibility) and correct_schedule = find_schedule(schedule, get_people_minus_responsibility(people.dup,person,responsibility) ,responsibilities.dup.reject{|a| a == responsibility})
-          schedule << {responsibility => person}
-          return schedule << correct_schedule 
+        if person.is_available_for?(responsibility)
+          person.take(responsibility)
+          find_schedule(schedule, get_people_minus_responsibility(people,person,responsibility) , responsibilities - [responsibility])
+          schedule[responsibility] =  person
+          return schedule
         end
-
       end
     end
     
@@ -38,12 +37,12 @@ class Scheduler
   end
 
   def get_people_minus_responsibility(people,person, responsibility) 
-    peeps = people.dup
-    peeps[person.key] = person.take(responsibility)
-  puts  peeps.inspect
+    peeps = people.clone
+    pers  = person.clone
+    peeps[pers.key] = pers.take(responsibility)
     peeps
-  end
+  end  
 end
 
-s = Scheduler.new()
-puts s.find_schedule()
+s = Scheduler.new
+puts s.find_schedule.inspect

@@ -25,18 +25,23 @@ class Person
   end
   
   def take(responsibility)
-    @availability.delete(responsibility.to_sym)
+    @availability[responsibility.to_sym] = "0"
     self
   end
   
   def is_available_for?(responsibility)
-    return true if @availability[responsibility.to_sym] == 1
+    return true if @availability[responsibility.to_sym].to_i == 1
     return false
   end
   
   def key
     "#{first}#{last}".gsub(' ','_').to_sym
   end
+  
+  def clone
+    Marshal::load(Marshal.dump(self))
+  end
+  
 end
 
 
