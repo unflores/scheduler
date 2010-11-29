@@ -12,7 +12,6 @@ class Board
   def size; @board.size end
   
   def choice_left?(column)
-    
     @board.size.times do |row|
       return true if @board[row][column].to_i == 1
     end
@@ -20,12 +19,15 @@ class Board
   end
   
   def take_choice!(column)
-    row = @board[column].index(1)
-    raise "Need to check if you can take a choice before you take it dummy!" if row.nil?
-    new_board = self.clone
-    @board[column][row]     = 0
-    new_board[column][row]  = 'x'
-    new_board
+    @board.size.times do |row|
+      if @board[row][column].to_i == 1
+        new_board = self.clone
+        @board[column][row]     = 0
+        new_board[column][row]  = 'x'
+        return new_board
+      end
+    end
+    return
   end
   
   def set_availability!(person , availability)
