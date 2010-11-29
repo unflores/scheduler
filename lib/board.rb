@@ -12,10 +12,14 @@ class Board
   def size; @board.size end
   
   def choice_left?(column)
-    return true if @board[column].include? 1
+    
+    @board.size.times do |row|
+      return true if @board[row][column].to_i == 1
+    end
+    return false
   end
   
-  def take_choice(column)
+  def take_choice!(column)
     row = @board[column].index(1)
     raise "Need to check if you can take a choice before you take it dummy!" if row.nil?
     new_board = self.clone
@@ -24,7 +28,12 @@ class Board
     new_board
   end
   
+  def set_availability!(person , availability)
+    @board[person] = availability.dup
+  end
+  
   def clone
     Marshal::load(Marshal.dump(self))
   end
+
 end
