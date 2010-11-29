@@ -27,7 +27,7 @@ class Board
         return new_board
       end
     end
-    return
+    return nil
   end
   
   def set_availability!(person , availability)
