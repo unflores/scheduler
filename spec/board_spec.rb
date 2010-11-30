@@ -4,8 +4,8 @@ describe Board do
   describe "#initialize" do
     it "should return a board with the correct height and width" do
       b = Board.new(5,6)
-      b[0].size.should == 5
-      b.size.should == 6
+      b.width.should == 5
+      b.height.should == 6
     end  
   end
   
@@ -51,7 +51,32 @@ describe Board do
     end
     
   end
+  
+  describe "#clone" do
+    before do
+      @board = Board.new(2,2)
+      @board[0][0] = 'x'
+      @board[1][1] = 1
+    end
+  
+    it "should make a dup of the board object" do
+      board2 = @board.clone(0)
+      @board.object_id.should_not == board2.object_id
+    end
 
+    it "should return a board with all 'x' from the static_column into 1" do
+      board2 = @board.clone(0)
+      board2[0][0].should == 1
+    end
+  end
 
+  describe "#complete?" do
+    it "should return true if all of the columns have an x in them" do
+      1.should == 'not yet tested'
+    end
+    it "should return nil if not all of the columns have an x in them" do
+      1.should == 'not yet tested'
+    end
+  end
   
 end

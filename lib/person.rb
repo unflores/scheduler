@@ -15,31 +15,8 @@ class Person
   attr_accessor :first,:last,:availability
   def initialize(person)
     person = person.collect{|field| field.strip}
-    @first = person[0]
-    @availability = {
-      :friday   => person[1],
-      :saturday => person[2],
-      :sunday   => person[3]
-    }
-    
-  end
-  
-  def take(responsibility)
-    @availability[responsibility.to_sym] = "0"
-    self
-  end
-  
-  def is_available_for?(responsibility)
-    return true if @availability[responsibility.to_sym].to_i == 1
-    return false
-  end
-  
-  def key
-    "#{first}#{last}".gsub(' ','_').to_sym
-  end
-  
-  def clone
-    Marshal::load(Marshal.dump(self))
+    @first = person.shift
+    @availability = person
   end
   
 end
