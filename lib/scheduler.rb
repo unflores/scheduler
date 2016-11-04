@@ -1,7 +1,4 @@
 class Scheduler
-  require 'csv'
-  require 'lib/person'
-  require 'lib/board'
   attr_accessor :people
 
   def initialize
