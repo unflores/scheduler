@@ -15,7 +15,7 @@ module Filters
       dups = Hash.new(0)
       solution.each do |value|
         dups[value] += 1
-        return true if dups[value] >= @max
+        return true if dups[value] > @max
       end
       false
     end
