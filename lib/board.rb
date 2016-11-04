@@ -1,58 +1,54 @@
 class Board
-  attr_accessor :board
-  def initialize(height, width)
-    raise "Height or Width cannot be 0!" if height == 0 or width == 0
-    @board = Array.new(width)
-    @board.map!{|cell| cell = Array.new(height)}
-  end
-  
-  def [](column)
-    @board[column]
-  end
-  
-  def height; @board.size end
+  def initialize(possibilities, users)
+    @possibilities = possibilities
 
-  def width; @board[0].size end
-  
-  def choice_left?(column)
-    height.times do |row|
-      return true if @board[row][column].to_i == 1
-    end
-    return false
+    @users = users
   end
-  
-  def take_choice!(column)
-    height.times do |row|
-      if @board[row][column].to_i == 1
-        new_board = self.clone(column)
-        new_board[row][column] = @board[row][column] = 'x'
-        return new_board
+
+  # All solution slots have been filled
+  def solved?(solution)
+    solution.compact.count == solution.count
+  end
+
+  # returns new solution or false
+  def choose_user(solution, user)
+    solution = solution.dup
+    solution_needed = solution.compact.count
+    return false if solution_needed == solution.count
+    if @possibilities[user][solution_needed] == 1
+      solution[solution_needed] = user
+      solution
+    else
+      false
+    end
+  end
+
+  def solve_board()
+    solve([], Array.new(@possibilities.first.length), 0)
+  end
+
+  def solve(solutions, solution, user)
+    if solved?(solution)
+      return solutions << solution
+    end
+
+    # Solve for this user
+    if next_solution = choose_user(solution,user)
+      solutions |= solve(solutions, next_solution, user)
+    end
+    # Solve for next user
+    for next_user in (user+1...@users)
+      if next_solution = choose_user(solution, next_user)
+        solutions |= solve(solutions, next_solution, next_user)
       end
     end
-    return nil
-  end
-  
-  def set_availability!(person , availability)
-    @board[person] = availability.dup.map{|cell| cell.to_i }
-  end
-  
-  def clone(static_column)
-    b = Marshal::load(Marshal.dump(self))
-    b.board.map! do |row| 
-      row[static_column] = 1 if row[static_column] == 'x'
-      row
+    # Solve for previous User
+    for prev_user in (0..user)
+      if next_solution = choose_user(solution, prev_user)
+        solutions |= solve(solutions, next_solution, prev_user)
+      end
     end
-    b
+    return solutions
   end
-  
-  def complete?
-    true unless flipped_columns.map{|column| true if column.include? "x"}.include? nil
-  end
-  
-  private
-  def flipped_columns
-    b = @board.dup
-    b.shift.zip(*b)
-  end
-
 end
+
