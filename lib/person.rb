@@ -1,12 +1,16 @@
 class Person
 
-  attr_accessor :first,:last,:availability
+  attr_accessor :name, :availability
   def initialize(person)
     person = person.collect{|field| field.strip}
-    @first = person.shift
-    @availability = person
+    @name = person.shift
+    @availability = person.map(&:to_i)
   end
-  
+
+  def to_hash
+    {availability: @availability, name: @name}
+  end
+
 end
 
 
