@@ -1,11 +1,11 @@
 class Scheduler
   attr_accessor :people
 
-  def initialize
+  def initialize(csv)
     @people = []
-    csv_data = CSV::read(File.open("./example/schedule.csv", 'r'))
+    csv_data = CSV::read(File.open(csv, 'r'))
     headers = csv_data.shift
-    @schedule_to_fill = headers.shift
+    @slots = headers[1..-1].map(&:strip)
 
     csv_data.each do |row|
       person = Person.new(row)
@@ -15,7 +15,12 @@ class Scheduler
   end
 
   def find_schedules()
-    @board.solve_board()
+    @solutions = @board.solve_board()
+    {
+      slots: @slots,
+      schedules: @solutions,
+      people: @people.map(&:to_hash)
+    }
   end
 
 end
