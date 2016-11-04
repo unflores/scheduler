@@ -3,30 +3,22 @@ class Scheduler
   require 'lib/person'
   require 'lib/board'
   attr_accessor :people
-  
+
   def initialize
-    @schedule_to_fill = ['friday', 'saturday', 'sunday']
     @people = []
-    CSV::Reader.parse(File.open("./example/schedule.csv", 'r')) do |row|
+    csv_data = CSV::read(File.open("./example/schedule.csv", 'r'))
+    headers = csv_data.shift
+    @schedule_to_fill = headers.shift
+
+    csv_data.each do |row|
       person = Person.new(row)
       @people.push person
     end
-    @board = Board.new(@people.size, @schedule_to_fill.size)
-    @people.each_index{|index| @board.set_availability!(index, @people[index].availability) }
-    @columns = []
-    @columns[0] = [@board]
+    @board = Board.new(@people.map(&:availability), @people.count)
   end
 
-  def find_schedule()
-    @board.height.times do |current_column|
-      @columns.push([])
-      @columns[current_column].each do |board|
-        while board.choice_left? current_column do
-          @columns[current_column + 1].push board.take_choice!(current_column)
-        end      
-      end
-    end
-    @columns[-1]
+  def find_schedules()
+    @board.solve_board()
   end
 
 end
