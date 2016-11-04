@@ -1,6 +1,24 @@
 require File.dirname(__FILE__) + "/../lib/board"
 describe Board do
 
+  describe "#choose_user" do
+    before :each do
+      @board = Board.new([[0,1],[1,0]], 2)
+    end
+
+    it "returns false if solution has been found" do
+      expect(@board.choose_user([1,1], 1)).to be_falsey
+    end
+
+    it "returns false if can't choose a user" do
+      expect(@board.choose_user([1,nil],1)).to be_falsey
+    end
+
+    it "returns the new solution with chosen user" do
+      expect(@board.choose_user([1,nil],0)).to eql([1,0])
+    end
+  end
+
   describe "#solve_board" do
     it "returns top down possible solutions" do
       possibilities = [
